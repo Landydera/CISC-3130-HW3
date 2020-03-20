@@ -1,0 +1,192 @@
+/** Islande Derazin
+ * Section: Ty9
+ * Class CISC 3130
+ **/
+
+
+import java.io.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+
+// Create a class that will hold an ArrayList of Movie objects
+
+public class MovieData
+{
+
+
+    private ArrayList<Movie> movies;
+
+
+     // Create a constructor for objects of class MovieData
+
+    public MovieData()
+    {
+        movies = new ArrayList<Movie>();
+    }
+
+    /**
+     * Overload the constructor MovieData() for objects of class MovieData
+     *
+     * This constructor Takes in ArrayList of Movie objects that is set to the class field
+     */
+    public MovieData(ArrayList<Movie> newMovies)
+    {
+
+        movies = newMovies;
+    }
+
+    /**
+     * Constructor for objects of class Movie with provided movie fields
+     */
+    protected void movieFile(String filename)
+    {
+        try
+        {
+            FileReader text = new FileReader("C://Users//islande.derazin//Documents//movies.csv");
+
+            try {
+                try (Scanner scan = new Scanner(text)) {
+
+                    int lineNum = 0;
+
+                    while (scan.hasNextLine()) {
+                        lineNum++;
+                        // Read one line of the text file into a string
+                        String line = scan.nextLine();
+
+                        // Split the line by comma into a String array
+                        String[] parts = line.split(",");
+                        String title = parts[0];
+                        String director = parts[1];
+                        String actor1 = parts[2];
+                        String actor2 = parts[3];
+                        String actor3 = parts[4];
+                        String rating = parts[5];
+                        rating = rating.trim();
+                        //convert the rating number string to an integer
+                        int ratingNumber = Integer.parseInt(rating);
+
+                        try {
+                            Movie movie = new Movie(title, director, actor1, actor2, actor3, ratingNumber);
+                            addMovie(movie);
+                        } catch (IllegalStateException e) {
+                            System.out.print("Error in movie information read from file.\n");
+                        }
+                    }
+                }
+            } finally
+            {
+                fr.close();
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.print("File not found");
+        }
+        catch (IOException e)
+        {
+            System.out.print("Unexpected I/O exception");
+        }
+    }
+
+    // Return whole internal database of Movie objects
+    public ArrayList<Movie> getAllMovies()
+    {
+        return movies;
+    }
+
+    // Add a movie to the database, throws a NullPointerException if object in argument is not set
+    public void addMovie(Movie newMovie)
+    {
+        if (newMovie == null)
+        {
+            throw new NullPointerException("Must provide a valid movie object\n");
+        }
+
+        movies.add(newMovie);
+    }
+
+    // Saves all movies in database to specified file
+    public void saveMoviesToFile(String filename)
+    {
+        try
+        {
+            PrintWriter writer = new PrintWriter("C://Users//islande.derazin//Documents//MovieData.txt");
+
+            try
+            {
+                Iterator<Movie> it = movies.iterator();
+                while (it.hasNext())
+                {
+                    Movie movie = it.next();
+                    String title = movie.getTitle();
+                    String director = movie.getDirector();
+                    ArrayList<String> actors = movie.getActors();
+                    int rating = movie.getRating();
+
+                    String actorsOutputLine = "";
+                    Iterator<String> itActors = actors.iterator();
+                    int numberActors = 0;
+                    while (itActors.hasNext())
+                    {
+                        String actor = itActors.next();
+                        actor = actor.concat(",");
+                        // add the actor to all the others to be written to file
+                        actorsOutputLine = actorsOutputLine.concat(actor);
+                        numberActors++;
+                    }
+                    // We know there can be only 3 actors so for the number of actors that were not in the object
+                   // add commas to ensure format of saving movie information to file is kept
+                    for (int i = 0; i < (3-numberActors); i++)
+                    {
+                        actorsOutputLine = actorsOutputLine.concat(",");
+                    }
+                    //Write line to file with all movie information
+                    writer.write(title+","+director+","+actorsOutputLine+rating+"\n");
+                }
+            }
+            finally
+            {
+                writer.close();
+            }
+
+        }
+        catch (IOException e)
+        {
+            System.out.print("Unexpected I/O exception\n");
+        }
+    }
+
+
+    //This represents a BST implementation
+
+    public class MovieBST {
+        private Movie first;
+
+        public void subSet(Set<String> str, Movie node, String start, String end) {
+
+            if (node == null) {
+                return;
+            }
+            if (start.compareTo(node.getTitle()) < 0) {
+                subSet(str, node.getLeft(), start, end);
+            }
+
+            if ((start.compareTo(node.getTitle()) <= 0) && (end.compareTo(node.getTitle()) >= 0)) {
+                str.add(node.getTitle());
+            }
+            if (0 < end.compareTo(node.getTitle())) {
+                subSet(str, node.getRight(), start, end);
+            }
+        }
+
+        public Set<String> subSet(String start, String end) {
+
+            Set<String> str = new HashSet<String>();
+            subSet(str, this.first, start, end);
+            return str;
+        }
+    }
