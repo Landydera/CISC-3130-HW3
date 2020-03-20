@@ -45,7 +45,7 @@ public class MovieData
     {
         try
         {
-            FileReader text = new FileReader("C://Users//islande.derazin//Documents//movies.csv");
+            FileReader text = new FileReader("movies.csv");
 
             try {
                 try (Scanner scan = new Scanner(text)) {
